@@ -1,110 +1,133 @@
 # Grawler
 
-A web crawler service built with Go, Gin, and PostgreSQL. This service allows you to manage URLs and create crawling tasks for them.
+**Grawler** is a web crawler and summarization service built with Go, Gin, and PostgreSQL. It lets you manage URLs, generate crawling tasks, track task status, and produce concise summaries of crawled content using a background worker.
 
-## Features
+---
 
-- URL Management
-  - Create and store URLs
-  - Fetch all stored URLs
-  - Configure crawling depth for each URL
-- Task Management
-  - Create crawling tasks for URLs
-  - Track task status (pending, running, completed, failed)
-- RESTful API
-  - Built with Gin framework
-  - Swagger documentation
-- Database
-  - PostgreSQL for data persistence
-  - GORM for database operations
+## 🚀 Features
 
-## Tech Stack
+- **URL Management**: Create, list, configure depth, enable/disable URLs.
+- **Task Management**: Generate crawling tasks, track statuses (*pending*, *running*, *completed*, *failed*).
+- **Crawling Engine**: Concurrent workers fetch page content with timeout and retry logic.
+- **Summarization**: Background summarizer calls an LLM API to generate concise content summaries.
+- **LLM-Powered Summaries**: Uses a local LLM (via Ollama) to generate human-quality summaries of crawled content.
+- **RESTful API**: JSON endpoints powered by Gin, with built-in Swagger documentation.
+- **Containerized**: Docker & Docker Compose for easy setup and scaling.
+- **Hot Reload**: Development with Air for instant reloads on code changes.
 
-- **Backend**: Go 1.24.1
-- **Framework**: Gin
-- **Database**: PostgreSQL
-- **ORM**: GORM
-- **Containerization**: Docker & Docker Compose
-- **Development**: Air (hot reload)
+---
 
-## Project Structure
+## 🔧 Tech Stack
+
+| Component      | Technology         |
+| -------------- | ------------------ |
+| Language       | Go 1.24.1          |
+| Web Framework  | Gin                |
+| ORM            | GORM (PostgreSQL)  |
+| Container      | Docker & Docker Compose |
+| Hot Reload     | Air                |
+
+---
+
+## 📁 Project Structure
 
 ```
 .
-├── handlers/     # HTTP request handlers
-├── middleware/   # Gin middleware
-├── models/       # Database models
-├── repository/   # Database operations
-├── router/       # API routes
-├── Dockerfile    # Backend container configuration
-└── docker-compose.yaml  # Multi-container setup
+├── handlers/          # HTTP request handlers
+├── middleware/        # Gin middleware for dependency injection
+├── models/            # GORM models (URL, Task, TaskResponse)
+├── repository/        # Database repositories
+├── queue/             # Task queue and crawling workers
+├── summarizer/        # Background summarization worker
+├── router/            # API route definitions
+├── main.go            # Application entrypoint
+├── Dockerfile         # Backend Docker configuration
+└── docker-compose.yaml # Multi-container setup
 ```
 
-## Models
+---
 
-### URL
-- `ID`: Unique identifier
-- `Url`: The URL to crawl
-- `MaxDepth`: Maximum crawling depth
-- `IsDisabled`: URL status
-- `CreatedAt`: Creation timestamp
-- `UpdatedAt`: Last update timestamp
+## ⚙️ Prerequisites
 
-### Task
-- `ID`: Unique identifier
-- `Status`: Task status (pending/running/completed/failed)
-- `UrlID`: Reference to the URL
-- `CreatedAt`: Creation timestamp
-- `UpdatedAt`: Last update timestamp
+- Go 1.24+ installed (for local dev)
+- Docker & Docker Compose (for containerized setup)
+- PostgreSQL database
 
-## API Endpoints
+---
 
-- `GET /healthz`: Health check
-- `POST /url`: Create a new URL
-- `GET /urls`: Fetch all URLs
-- `POST /crawl`: Create crawling tasks for all URLs
+## 🏁 Getting Started
 
-## Getting Started
+### 1. Clone the Repository
 
-### Prerequisites
+```bash
+git clone https://github.com/gitnoober/grawler.git
+cd grawler
+```
 
-- Docker
-- Docker Compose
-- Go 1.24.1 (for local development)
+### 2. Set Environment Variables
 
-### Running with Docker
+Create a `.env` file or export in your shell:
 
-1. Clone the repository
-2. Build and start the containers:
-   ```bash
-   docker-compose up --build
-   ```
-3. The API will be available at `http://localhost:8080`
+```bash
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_USER=grawler
+export DB_PASSWORD=grawlerpass
+export DB_NAME=grawlerdb
+export PORT=8080
+export LLM_API_URL=http://localhost:11434/api/generate
+```
 
-### Environment Variables
+#### Ollama LLM Setup
 
-The following environment variables are required:
+Ensure you have the Ollama CLI installed for local LLM inference:
 
-- `DB_HOST`: Database host (default: db)
-- `DB_PORT`: Database port (default: 5432)
-- `DB_USER`: Database user (default: grawler)
-- `DB_PASSWORD`: Database password (default: grawlerpass)
-- `DB_NAME`: Database name (default: grawlerdb)
+```bash
+# macOS
+brew install ollama
+# or visit https://ollama.ai for other platforms
 
-## Development
+# Pull a model (e.g., llama2)
+ollama pull llama2:latest
 
-For local development:
+# Start the Ollama server
+ollama serve llama2 --port 11434
+```
 
-1. Install dependencies:
-   ```bash
-   go mod download
-   ```
+### 3. Run with Docker
 
-2. Start the development server with hot reload:
-   ```bash
-   go run github.com/air-verse/air
-   ```
+```bash
+docker-compose up --build
+```
 
-## License
+- **Backend**: http://localhost:8080
+- **PostgreSQL**: localhost:5432
 
-MIT
+### 4. Local Development
+
+```bash
+# Install dependencies
+go mod download
+
+# Start server with hot reload
+air
+```
+
+---
+
+## 📡 API Endpoints
+
+| Method | Path               | Description                          |
+| ------ | ------------------ | ------------------------------------ |
+| GET    | `/healthz`         | Health check endpoint                |
+| POST   | `/url`             | Create a new URL to crawl            |
+| GET    | `/urls`            | Fetch all stored URLs                |
+| POST   | `/crawl`           | Generate crawling tasks for all URLs |
+| GET    | `/summaries`       | List all URL summaries               |
+| GET    | `/summaries/:id`   | Fetch a summary by its ID            |
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
