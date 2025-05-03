@@ -8,8 +8,6 @@ import (
 	"github.com/gitnoober/grawler/repository"
 )
 
-var urlRepository repository.UrlRepository
-
 type AddUrlRequest struct {
 	Url string `json:"url" binding:"required"`
 	MaxDepth int `json:"max_depth" binding:"required"`
@@ -28,8 +26,12 @@ func CreateUrl(c *gin.Context){
 		MaxDepth: request.MaxDepth,
 		IsDisabled: request.IsDisabled,
 	}
-	
-	if err := urlRepository.CreateUrl(url); err != nil {
+	urlRepo, ok := c.MustGet("urlRepository").(repository.UrlRepository)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get URL repository"})
+		return
+	}
+	if err := urlRepo.CreateUrl(url); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create URL"})
 		return
 	}
@@ -38,7 +40,12 @@ func CreateUrl(c *gin.Context){
 }
 
 func FetchAllUrls(c *gin.Context) {
-	urls, err := urlRepository.GetAllUrls()
+	urlRepo, ok := c.MustGet("urlRepository").(repository.UrlRepository)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get URL repository"})
+		return
+	}
+	urls, err := urlRepo.GetAllUrls()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch URLs"})
 		return

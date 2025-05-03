@@ -13,7 +13,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	router.GET("/healthz", handlers.CheckHealth)
 	router.POST("/url", handlers.CreateUrl)
-	router.GET("/urls", handlers.FetchAllUrls)
+	router.GET("/url", handlers.FetchAllUrls)
 	router.POST("/crawl", handlers.CrawlUrls)
 
 	return router

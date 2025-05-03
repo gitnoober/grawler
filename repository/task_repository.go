@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/gitnoober/grawler/models"
 	"gorm.io/gorm"
 )
@@ -29,7 +31,10 @@ func (r *taskRepository) GetTask(taskID string) (*models.Task, error) {
 }
 
 func (r *taskRepository) UpdateTask(task *models.Task) error {
+	fmt.Println("Updating task: ", task.ID)
+	fmt.Println("Task: ", task)
 	if err := r.db.Model(&task).Where("id = ?", task.ID).Updates(task).Error; err != nil {
+		fmt.Println("Error updating task: ", err)
 		return err
 	}
 	return nil

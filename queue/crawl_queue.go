@@ -32,7 +32,19 @@ func crawlUrl(task *models.Task, taskRepo repository.TaskRepository) {
 		fmt.Println("Error creating task: ", err)
 		return
 	}
-	fmt.Println("Crawling URL: ", task.UrlID)
+	fmt.Println("Task created: ", task)
+	task.Status = models.TaskStatusRunning
+	err = taskRepo.UpdateTask(task)
+	if err != nil {
+		fmt.Println("Error updating task: ", err)
+		return
+	}
+	fmt.Println("Crawling URL: ", task.ID)
 	fmt.Println("Task: ", task)
-	// TODO: Implement the logic to crawl the URL
+	task.Status = models.TaskStatusCompleted
+	err = taskRepo.UpdateTask(task)
+	if err != nil {
+		fmt.Println("Error updating task: ", err)
+		return
+	}
 }
