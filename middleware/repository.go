@@ -13,10 +13,11 @@ func InjectRepositories(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		urlRepo := repository.NewUrlRepository(db)
 		taskRepo := repository.NewTaskRepository(db)
-		
+		taskResponseRepo := repository.NewTaskResponseRepository(db)
 		c.Set("urlRepository", urlRepo)
 		c.Set("taskRepository", taskRepo)
-		fmt.Println("Injecting repositories", urlRepo, taskRepo)
+		c.Set("taskResponseRepository", taskResponseRepo)
+		fmt.Println("Injecting repositories", urlRepo, taskRepo, taskResponseRepo)
 		c.Next()
 	}
 }

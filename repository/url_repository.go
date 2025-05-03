@@ -10,6 +10,7 @@ type UrlRepository interface {
 	CreateUrl(url *models.Url) error
 	GetUrlMetadata(url string) (*models.Url, error)
 	GetAllUrls() ([]*models.Url, error)
+	GetUrlMetadataByID(id uint) (*models.Url, error)
 }
 
 type urlRepository struct {
@@ -34,4 +35,12 @@ func (r *urlRepository) GetAllUrls () ([]*models.Url, error) {
 		return nil, err
 	}
 	return urls, nil
+}
+
+func (r *urlRepository) GetUrlMetadataByID(id uint) (*models.Url, error) {
+	var urlMetadata models.Url
+	if err := r.db.Where("id = ?", id).First(&urlMetadata).Error; err != nil {
+		return nil, err
+	}
+	return &urlMetadata, nil
 }

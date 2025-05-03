@@ -37,7 +37,9 @@ func main() {
 		panic("failed to connect database")
 	}
 	taskRepo := repository.NewTaskRepository(db)
-	queue.InitQueue(BUFFER_SIZE, NUM_WORKERS, taskRepo)
+	urlRepo := repository.NewUrlRepository(db)
+	taskResponseRepo := repository.NewTaskResponseRepository(db)
+	queue.InitQueue(BUFFER_SIZE, NUM_WORKERS, taskRepo, urlRepo, taskResponseRepo)
 	router := router.SetupRouter(db)
 	fmt.Println("Starting server on port :8080")
 	router.Run(":8080")

@@ -15,6 +15,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	router.POST("/url", handlers.CreateUrl)
 	router.GET("/url", handlers.FetchAllUrls)
 	router.POST("/crawl", handlers.CrawlUrls)
+	router.GET("/task-response", handlers.FetchAllTaskResponses)
 
 	return router
 }
