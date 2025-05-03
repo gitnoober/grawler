@@ -1,6 +1,12 @@
 # Grawler
 
-**Grawler** is a web crawler and summarization service built with Go, Gin, and PostgreSQL. It lets you manage URLs, generate crawling tasks, track task status, and produce concise summaries of crawled content using a background worker.
+**Grawler** is an open-source web crawler and content summarizer powered by Go, Gin, PostgreSQL, and local LLMs via Ollama.
+Easily manage URLs, automate crawling tasks, and generate human-quality summaries of web content using state-of-the-art language models—all in your own infrastructure.
+🚀 Fast, concurrent crawling with task management
+🤖 LLM-powered content summaries (Ollama integration)
+🗂️ RESTful API for easy integration
+🐳 Fully containerized with Docker & Compose
+Perfect for research, monitoring, or building your own knowledge base from the web!
 
 ---
 
