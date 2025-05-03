@@ -1,0 +1,7 @@
+.git
+bin/
+build/
+dist/
+node_modules/
+vendor/
+vendor/
