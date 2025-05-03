@@ -5,9 +5,14 @@ import (
 	"os"
 
 	"github.com/gitnoober/grawler/queue"
+	"github.com/gitnoober/grawler/repository"
 	"github.com/gitnoober/grawler/router"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+)
+const (
+	BUFFER_SIZE = 1000
+	NUM_WORKERS = 10
 )
 
 func InitDB() (*gorm.DB, error) {
@@ -27,11 +32,12 @@ func InitDB() (*gorm.DB, error) {
 
 
 func main() {
-	queue.InitQueue(1000, 10)
 	db, err := InitDB()
 	if err != nil {
 		panic("failed to connect database")
 	}
+	taskRepo := repository.NewTaskRepository(db)
+	queue.InitQueue(BUFFER_SIZE, NUM_WORKERS, taskRepo)
 	router := router.SetupRouter(db)
 	fmt.Println("Starting server on port :8080")
 	router.Run(":8080")

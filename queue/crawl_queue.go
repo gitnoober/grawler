@@ -10,28 +10,29 @@ import (
 
 var CrawlQueue chan *models.Task
 var CrawlQueueMutex sync.Mutex
-var taskRepo repository.TaskRepository
 
-func InitQueue(bufferSize int, numWorkers int) {
+func InitQueue(bufferSize int, numWorkers int, taskRepo repository.TaskRepository) {
 	CrawlQueue = make(chan *models.Task, bufferSize)
-	startWorkerPool(numWorkers)
+	startWorkerPool(numWorkers, taskRepo)
 }
 
-func startWorkerPool(numWorkers int) {
+func startWorkerPool(numWorkers int, taskRepo repository.TaskRepository) {
 	for i := 0; i < numWorkers; i++ {
 		go func(){
 			for task := range CrawlQueue {
-				crawlUrl(task)
+				crawlUrl(task, taskRepo)
 			}
 		}()
 	}
 }
 
-func crawlUrl(task *models.Task) {
+func crawlUrl(task *models.Task, taskRepo repository.TaskRepository) {
 	err := taskRepo.CreateTask(task)
 	if err != nil {
 		fmt.Println("Error creating task: ", err)
 		return
 	}
+	fmt.Println("Crawling URL: ", task.UrlID)
+	fmt.Println("Task: ", task)
 	// TODO: Implement the logic to crawl the URL
 }
