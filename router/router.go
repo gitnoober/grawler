@@ -3,14 +3,18 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gitnoober/grawler/handlers"
+	"github.com/gitnoober/grawler/middleware"
+	"gorm.io/gorm"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(db *gorm.DB) *gin.Engine {
 	router := gin.Default()
+	router.Use(middleware.InjectRepositories(db))
 
 	router.GET("/healthz", handlers.CheckHealth)
-	router.POST("/crawl", handlers.CreateUrl)
-
+	router.POST("/url", handlers.CreateUrl)
+	router.GET("/urls", handlers.FetchAllUrls)
+	router.POST("/crawl", handlers.CrawlUrls)
 
 	return router
 }

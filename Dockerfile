@@ -1,9 +1,9 @@
-FROM golang:1.22
+FROM golang:latest
 
 WORKDIR /app
 
 # Install air (latest version as of now)
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/air-verse/air@latest
 
 # Copy Go mod files and download dependencies
 COPY go.mod go.sum ./

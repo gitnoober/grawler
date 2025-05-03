@@ -8,7 +8,8 @@ import (
 
 type UrlRepository interface {
 	CreateUrl(url *models.Url) error
-	GetUrl(url string) (*models.Url, error)
+	GetUrlMetadata(url string) (*models.Url, error)
+	GetAllUrls() ([]*models.Url, error)
 }
 
 type urlRepository struct {
@@ -27,3 +28,10 @@ func (r *urlRepository) GetUrlMetadata(url string) (*models.Url, error) {
 	return &urlMetadata, nil
 }
 
+func (r *urlRepository) GetAllUrls () ([]*models.Url, error) {
+	var urls []*models.Url
+	if err := r.db.Find(&urls).Error; err != nil {
+		return nil, err
+	}
+	return urls, nil
+}

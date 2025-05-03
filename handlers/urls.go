@@ -36,3 +36,12 @@ func CreateUrl(c *gin.Context){
 
 	c.JSON(http.StatusOK, gin.H{"message": "URL added successfully"})
 }
+
+func FetchAllUrls(c *gin.Context) {
+	urls, err := urlRepository.GetAllUrls()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch URLs"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"urls": urls})
+}
