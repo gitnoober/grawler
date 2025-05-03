@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gitnoober/grawler/models"
 	"github.com/gitnoober/grawler/queue"
 	"github.com/gitnoober/grawler/repository"
 	"github.com/gitnoober/grawler/router"
+	"github.com/gitnoober/grawler/summarizer"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -36,10 +38,18 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
+	db.AutoMigrate(&models.Task{})
+	db.AutoMigrate(&models.Url{})
+	db.AutoMigrate(&models.TaskResponse{})
+	db.AutoMigrate(&models.UrlSummary{})
 	taskRepo := repository.NewTaskRepository(db)
 	urlRepo := repository.NewUrlRepository(db)
 	taskResponseRepo := repository.NewTaskResponseRepository(db)
+	urlSummaryRepo := repository.NewUrlSummaryRepository(db)
 	queue.InitQueue(BUFFER_SIZE, NUM_WORKERS, taskRepo, urlRepo, taskResponseRepo)
+	
+	go summarizer.StartSummarizer(taskResponseRepo, urlSummaryRepo)
+	
 	router := router.SetupRouter(db)
 	fmt.Println("Starting server on port :8080")
 	router.Run(":8080")

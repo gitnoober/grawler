@@ -85,6 +85,8 @@ func crawlUrl(task *models.Task, taskRepo repository.TaskRepository, urlRepo rep
 	
 	taskResponse := &models.TaskResponse{
 		Body: string(body),
+		TaskID: task.ID,
+		UrlID: urlMetadata.ID,
 	}
 	err = taskResponseRepo.CreateTaskResponse(taskResponse)
 	if err != nil {

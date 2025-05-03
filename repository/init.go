@@ -16,3 +16,7 @@ func NewTaskRepository(db *gorm.DB) TaskRepository {
 func NewTaskResponseRepository(db *gorm.DB) TaskResponseRepository {
 	return &taskResponseRepository{db: db}
 }
+
+func NewUrlSummaryRepository(db *gorm.DB) UrlSummaryRepository {
+	return &urlSummaryRepository{db: db}
+}

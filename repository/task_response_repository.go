@@ -10,6 +10,8 @@ type TaskResponseRepository interface {
 	CreateTaskResponse(taskResponse *models.TaskResponse) error
 	GetTaskResponse(taskResponseID string) (*models.TaskResponse, error)
 	GetAllTaskResponses() ([]*models.TaskResponse, error)
+	GetUnprocessedResponses(limit int) ([]*models.TaskResponse, error)
+	UpdateTaskResponseSummary(taskResponse *models.TaskResponse) error
 }
 
 type taskResponseRepository struct {
@@ -35,4 +37,16 @@ func (r *taskResponseRepository) GetAllTaskResponses() ([]*models.TaskResponse, 
 		return nil, err
 	}
 	return taskResponses, nil
+}
+
+func (r *taskResponseRepository) GetUnprocessedResponses(limit int) ([]*models.TaskResponse, error) {
+	var taskResponses []*models.TaskResponse
+	if err := r.db.Where("summary_generated = ?", false).Limit(limit).Find(&taskResponses).Error; err != nil {
+		return nil, err
+	}
+	return taskResponses, nil
+}
+
+func (r *taskResponseRepository) UpdateTaskResponseSummary(taskResponse *models.TaskResponse) error {
+	return r.db.Model(taskResponse).Update("summary_generated", taskResponse.SummaryGenerated).Error
 }
