@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gitnoober/grawler/queue"
 	"github.com/gitnoober/grawler/router"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -26,6 +27,7 @@ func InitDB() (*gorm.DB, error) {
 
 
 func main() {
+	queue.InitQueue(1000, 10)
 	db, err := InitDB()
 	if err != nil {
 		panic("failed to connect database")

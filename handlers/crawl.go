@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gitnoober/grawler/models"
+	"github.com/gitnoober/grawler/queue"
 	"github.com/gitnoober/grawler/repository"
 )
-
 
 // CrawlUrls handles the creation of tasks for all existing URLs
 // @Summary Create tasks for all URLs
@@ -24,12 +24,6 @@ func CrawlUrls(c *gin.Context) {
 		return
 	}
 
-	taskRepo, ok := c.MustGet("taskRepository").(repository.TaskRepository)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get task repository"})
-		return
-	}
-
 	// Get all URLs
 	urls, err := urlRepo.GetAllUrls()
 	if err != nil {
@@ -39,17 +33,13 @@ func CrawlUrls(c *gin.Context) {
 
 	// Create tasks for each URL
 	for _, url := range urls {
-		task := models.Task{
+		task := &models.Task{
 			Status: models.TaskStatusPending,
 			UrlID:  url.ID,
 		}
-
-		if err := taskRepo.CreateTask(&task); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create task"})
-			return
-		}
+		queue.CrawlQueue <- task
 	}
-
+	
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Tasks created successfully",
 		"count":   len(urls),
