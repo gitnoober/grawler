@@ -82,7 +82,6 @@ func crawlUrl(task *models.Task, taskRepo repository.TaskRepository, urlRepo rep
 		}
 		return
 	}
-	fmt.Println("Body: ", string(body))
 	
 	taskResponse := &models.TaskResponse{
 		Body: string(body),
